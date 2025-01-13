@@ -1,15 +1,26 @@
-#include "complexity.hpp"
+//
+// Created by Simon Cros on 12/01/2025.
+//
 
+#include <string>
 #include <stdexcept>
-
+#include <unistd.h>
 #include <sys/stat.h>
 
-const string &assertExecutable(const string &path) {
-	struct stat  st;
+auto prettyPrint() -> bool
+{
+    return isatty(1);
+}
 
-	if (stat(path.c_str(), &st) < 0 ||
-		(st.st_mode  &S_IEXEC) == 0 ||
-		(st.st_mode  &S_IFREG) == 0)
-		throw invalid_argument(path + " is not a valid file");
-	return path;
+auto isExecutable(const std::string& path) -> bool
+{
+    struct stat st{};
+
+    return stat(path.c_str(), &st) >= 0 && (st.st_mode & S_IEXEC) == S_IEXEC && (st.st_mode & S_IFREG) == S_IFREG;
+}
+
+auto assertExecutable(const std::string& path) -> void
+{
+    if (!isExecutable(path))
+        throw std::invalid_argument(path + " is not a valid file");
 }
